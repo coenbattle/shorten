@@ -6,11 +6,15 @@ const supabase = createClient(
 )
 
 export async function getServerSideProps({ params }) {
+  const { slug } = params
+
   const { data, error } = await supabase
     .from('links')
     .select('url')
-    .eq('slug', params.slug)
+    .eq('slug', slug)
     .single()
+
+  console.log('Redirect lookup:', { slug, data, error })
 
   if (data?.url) {
     return {
