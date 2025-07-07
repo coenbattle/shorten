@@ -1,20 +1,16 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-)
-
 export async function getServerSideProps({ params }) {
-  const { slug } = params
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  )
 
   const { data, error } = await supabase
     .from('links')
     .select('url')
-    .eq('slug', slug)
+    .eq('slug', params.slug)
     .single()
-
-  console.log('Redirect lookup:', { slug, data, error })
 
   if (data?.url) {
     return {
@@ -25,7 +21,9 @@ export async function getServerSideProps({ params }) {
     }
   }
 
-  return { notFound: true }
+  return {
+    notFound: true,
+  }
 }
 
 export default function RedirectPage() {
