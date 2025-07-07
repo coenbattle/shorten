@@ -12,12 +12,16 @@ export default function Home() {
       body: JSON.stringify({ url }),
     })
     const data = await res.json()
-    setShortLink(data.short || 'Error creating link')
+    if (data.slug) {
+      setShortLink(window.location.origin + '/' + data.slug)
+    } else {
+      alert(data.error || 'Something went wrong')
+    }
   }
 
   return (
     <main style={{ padding: '2rem', fontFamily: 'sans-serif' }}>
-      <h1>🔗 URL Shortener</h1>
+      <h1>🔗 URL Shortener (Supabase)</h1>
       <form onSubmit={handleSubmit}>
         <input
           type="url"
@@ -31,7 +35,7 @@ export default function Home() {
       </form>
       {shortLink && (
         <p style={{ marginTop: '1rem' }}>
-          Short link: <a href={`/${shortLink}`} target="_blank">{typeof window !== 'undefined' ? window.location.origin : ''}/{shortLink}</a>
+          Short link: <a href={shortLink} target="_blank">{shortLink}</a>
         </p>
       )}
     </main>
