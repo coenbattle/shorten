@@ -1,15 +1,21 @@
-import fs from 'fs'
-import path from 'path'
+import { createClient } from '@supabase/supabase-js'
+
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+)
 
 export async function getServerSideProps({ params }) {
-  const linksPath = path.join(process.cwd(), 'links.json')
-  const links = JSON.parse(fs.readFileSync(linksPath, 'utf8'))
-  const url = links[params.slug]
+  const { data, error } = await supabase
+    .from('links')
+    .select('url')
+    .eq('slug', params.slug)
+    .single()
 
-  if (url) {
+  if (data?.url) {
     return {
       redirect: {
-        destination: url,
+        destination: data.url,
         permanent: false,
       },
     }
